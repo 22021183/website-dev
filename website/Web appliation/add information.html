@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Information</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 600px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .student-list {
+            margin-top: 20px;
+        }
+        
+        .student-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .student-item span {
+            font-weight: bold;
+        }
+        
+        .edit-button,
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .edit-button {
+            background-color: #2196F3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Student Information</h2>
+
+        <!-- Form to add new student -->
+        <form id="studentForm">
+            <input type="hidden" id="studentId">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter student's name" required>
+
+            <label for="id">Student ID:</label>
+            <input type="number" id="id" name="id" placeholder="Enter student's ID" required>
+
+            <button type="submit" id="submitButton">Add Student</button>
+        </form>
+
+        <!-- List of students -->
+        <div class="student-list" id="studentList">
+            <!-- Student items will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript code goes here
+        let students = []; // Array to store student objects
+
+        // Function to render students in the list
+        function renderStudents() {
+            const studentList = document.getElementById('studentList');
+            studentList.innerHTML = '';
+
+            students.forEach((student, index) => {
+                const studentItem = document.createElement('div');
+                studentItem.classList.add('student-item');
+                studentItem.innerHTML = `
+            <span>Name: ${student.name}</span>
+            <span>ID: ${student.id}</span>
+            <button class="edit-button" onclick="editStudent(${index})">Edit</button>
+            <button class="delete-button" onclick="deleteStudent(${index})">Delete</button>
+        `;
+                studentList.appendChild(studentItem);
+            });
+        }
+
+        // Function to add or edit a student
+        function addEditStudent(event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('studentId').value;
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+
+            if (name.trim() === '' || id.trim() === '') {
+                alert('Please enter both name and ID.');
+                return;
+            }
+
+            if (studentId === '') {
+                // Add new student
+                const student = {
+                    name,
+                    id
+                };
+                students.push(student);
+            } else {
+                // Edit existing student
+                students[studentId].name = name;
+                students[studentId].id = id;
+                document.getElementById('submitButton').innerText = 'Add Student';
+                document.getElementById('studentId').value = '';
+            }
+
+            // Clear form fields
+            document.getElementById('name').value = '';
+            document.getElementById('id').value = '';
+
+            // Render updated student list
+            renderStudents();
+        }
+
+        // Function to edit a student
+        function editStudent(index) {
+            document.getElementById('name').value = students[index].name;
+            document.getElementById('id').value = students[index].id;
+            document.getElementById('submitButton').innerText = 'Save Changes';
+            document.getElementById('studentId').value = index;
+        }
+
+        // Function to delete a student
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            renderStudents();
+        }
+
+        // Event listener for form submission
+        document.getElementById('studentForm').addEventListener('submit', addEditStudent);
+
+        // Initial render of student list
+        renderStudents();
+    </script>
+
+</body>
+
+</html>

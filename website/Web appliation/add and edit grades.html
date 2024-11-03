@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Grades</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .student-list {
+            margin-top: 20px;
+        }
+        
+        .student-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .student-item span {
+            font-weight: bold;
+        }
+        
+        .grades-list {
+            margin-top: 20px;
+        }
+        
+        .grade-item {
+            background-color: #f9f9f9;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 4px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .grade-item span {
+            font-weight: bold;
+        }
+        
+        .edit-button,
+        .delete-button {
+            background-color: #f44336;
+            color: white;
+            border: none;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        
+        .edit-button {
+            background-color: #2196F3;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Student Grades</h2>
+
+        <!-- Form to add new student -->
+        <form id="studentForm">
+            <input type="hidden" id="studentId">
+            <label for="name">Name:</label>
+            <input type="text" id="name" name="name" placeholder="Enter student's name" required>
+
+            <label for="id">Student ID:</label>
+            <input type="number" id="id" name="id" placeholder="Enter student's ID" required>
+
+            <button type="submit" id="submitButton">Add Student</button>
+        </form>
+
+        <!-- List of students -->
+        <div class="student-list" id="studentList">
+            <!-- Student items will be dynamically added here -->
+        </div>
+
+        <!-- Form to add/edit grades -->
+        <form id="gradeForm" style="margin-top: 20px;">
+            <input type="hidden" id="gradeId">
+            <label for="studentSelect">Select Student:</label>
+            <select id="studentSelect" required>
+            <option value="">Select a student</option>
+            <!-- Options will be dynamically added here -->
+        </select>
+
+            <label for="course">Course:</label>
+            <input type="text" id="course" name="course" placeholder="Enter course name" required>
+
+            <label for="grade">Grade:</label>
+            <input type="number" id="grade" name="grade" placeholder="Enter grade" min="0" max="100" required>
+
+            <button type="submit" id="submitGradeButton">Add Grade</button>
+        </form>
+
+        <!-- List of grades -->
+        <div class="grades-list" id="gradesList">
+            <!-- Grade items will be dynamically added here -->
+        </div>
+    </div>
+
+    <script>
+        // JavaScript code goes here
+        let students = []; // Array to store student objects
+        let grades = []; // Array to store grade objects
+
+        // Function to render students in the list
+        function renderStudents() {
+            const studentList = document.getElementById('studentList');
+            const studentSelect = document.getElementById('studentSelect');
+            studentList.innerHTML = '';
+            studentSelect.innerHTML = '<option value="">Select a student</option>';
+
+            students.forEach((student, index) => {
+                const studentItem = document.createElement('div');
+                studentItem.classList.add('student-item');
+                studentItem.innerHTML = `
+            <span>Name: ${student.name}</span>
+            <span>ID: ${student.id}</span>
+            <button class="edit-button" onclick="editStudent(${index})">Edit</button>
+            <button class="delete-button" onclick="deleteStudent(${index})">Delete</button>
+        `;
+                studentList.appendChild(studentItem);
+
+                // Populate student select options for grades form
+                const option = document.createElement('option');
+                option.value = index;
+                option.textContent = `${student.name} (ID: ${student.id})`;
+                studentSelect.appendChild(option);
+            });
+        }
+
+        // Function to add or edit a student
+        function addEditStudent(event) {
+            event.preventDefault();
+
+            const studentId = document.getElementById('studentId').value;
+            const name = document.getElementById('name').value;
+            const id = document.getElementById('id').value;
+
+            if (name.trim() === '' || id.trim() === '') {
+                alert('Please enter both name and ID.');
+                return;
+            }
+
+            if (studentId === '') {
+                // Add new student
+                const student = {
+                    name,
+                    id
+                };
+                students.push(student);
+            } else {
+                // Edit existing student
+                students[studentId].name = name;
+                students[studentId].id = id;
+                document.getElementById('submitButton').innerText = 'Add Student';
+                document.getElementById('studentId').value = '';
+            }
+
+            // Clear form fields
+            document.getElementById('name').value = '';
+            document.getElementById('id').value = '';
+
+            // Render updated student list
+            renderStudents();
+        }
+
+        // Function to edit a student
+        function editStudent(index) {
+            document.getElementById('name').value = students[index].name;
+            document.getElementById('id').value = students[index].id;
+            document.getElementById('submitButton').innerText = 'Save Changes';
+            document.getElementById('studentId').value = index;
+        }
+
+        // Function to delete a student
+        function deleteStudent(index) {
+            students.splice(index, 1);
+            // Remove associated grades of the deleted student
+            grades = grades.filter(grade => grade.studentIndex !== index);
+            renderStudents();
+            renderGrades();
+        }
+
+        // Function to render grades in the list
+        function renderGrades() {
+            const gradesList = document.getElementById('gradesList');
+            gradesList.innerHTML = '';
+
+            grades.forEach((grade, index) => {
+                const gradeItem = document.createElement('div');
+                gradeItem.classList.add('grade-item');
+                gradeItem.innerHTML = `
+            <span>Student: ${students[grade.studentIndex].name} (ID: ${students[grade.studentIndex].id})</span>
+            <span>Course: ${grade.course}</span>
+            <span>Grade: ${grade.grade}</span>
+            <button class="edit-button" onclick="editGrade(${index})">Edit</button>
+            <button class="delete-button" onclick="deleteGrade(${index})">Delete</button>
+        `;
+                gradesList.appendChild(gradeItem);
+            });
+        }
+
+        // Function to add or edit a grade
+        function addEditGrade(event) {
+            event.preventDefault();
+
+            const gradeId = document.getElementById('gradeId').value;
+            const studentIndex = document.getElementById('studentSelect').value;
+            const course = document.getElementById('course').value;
+            const grade = document.getElementById('grade').value;
+
+            if (studentIndex === '' || course.trim() === '' || grade.trim() === '') {
+                alert('Please select a student and enter course name and grade.');
+                return;
+            }
+
+            if (isNaN(parseFloat(grade)) || parseFloat(grade) < 0 || parseFloat(grade) > 100) {
+                alert('Please enter a valid grade between 0 and 100.');
+                return;
+            }
+
+            if (gradeId === '') {
+                // Add new grade
+                const newGrade = {
+                    studentIndex: parseInt(studentIndex),
+                    course,
+                    grade: parseFloat(grade)
+                };
+                grades.push(newGrade);
+            } else {
+                // Edit existing grade
+                grades[gradeId].studentIndex = parseInt(studentIndex);
+                grades[gradeId].course = course;
+                grades[gradeId].grade = parseFloat(grade);
+                document.getElementById('submitGradeButton').innerText = 'Add Grade';
+                document.getElementById('gradeId').value = '';
+            }
+
+            // Clear form fields
+            document.getElementById('studentSelect').value = '';
+            document.getElementById('course').value = '';
+            document.getElementById('grade').value = '';
+
+            // Render updated grades list
+            renderGrades();
+        }
+
+        // Function to edit a grade
+        function editGrade(index) {
+            const grade = grades[index];
+            document.getElementById('studentSelect').value = grade.studentIndex;
+            document.getElementById('course').value = grade.course;
+            document.getElementById('grade').value = grade.grade;
+            document.getElementById('submitGradeButton').innerText = 'Save Changes';
+            document.getElementById('gradeId').value = index;
+        }
+
+        // Function to delete a grade
+        function deleteGrade(index) {
+            grades.splice(index, 1);
+            renderGrades();
+        }
+
+        // Event listeners
+        document.getElementById('studentForm').addEventListener('submit', addEditStudent);
+        document.getElementById('gradeForm').addEventListener('submit', addEditGrade);
+
+        // Initial render
+        renderStudents();
+        renderGrades();
+    </script>
+</body>
+
+</html>

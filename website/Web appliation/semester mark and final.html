@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mark Calculation</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f0f0f0;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            margin: auto;
+        }
+        
+        h2 {
+            text-align: center;
+            color: #333;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+        
+        input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+        }
+        
+        button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-right: 10px;
+        }
+        
+        button:hover {
+            background-color: #45a049;
+        }
+        
+        .result {
+            margin-top: 20px;
+        }
+        
+        .result h3 {
+            margin-bottom: 10px;
+            color: #333;
+        }
+        
+        .result p {
+            font-size: 18px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+        <h2>Mark Calculation</h2>
+
+        <!-- Form to enter grades and credits -->
+        <form id="markForm">
+            <label for="grade1">Grade 1:</label>
+            <input type="number" id="grade1" name="grade1" placeholder="Enter grade for Course 1" min="0" max="100" required>
+
+            <label for="credits1">Credits for Course 1:</label>
+            <input type="number" id="credits1" name="credits1" placeholder="Enter credits for Course 1" min="1" required>
+
+            <label for="grade2">Grade 2:</label>
+            <input type="number" id="grade2" name="grade2" placeholder="Enter grade for Course 2" min="0" max="100" required>
+
+            <label for="credits2">Credits for Course 2:</label>
+            <input type="number" id="credits2" name="credits2" placeholder="Enter credits for Course 2" min="1" required>
+
+            <button type="submit" id="calculateButton">Calculate</button>
+        </form>
+
+        <!-- Result Section -->
+        <div class="result" id="resultSection" style="display: none;">
+            <h3>Result</h3>
+            <p>Semester GPA: <span id="semesterGPA"></span></p>
+            <p>Final Mark: <span id="finalMark"></span></p>
+        </div>
+    </div>
+
+    <script>
+        // JavaScript code goes here
+
+        document.getElementById('markForm').addEventListener('submit', function(event) {
+            event.preventDefault();
+
+            // Retrieve input values
+            const grade1 = parseFloat(document.getElementById('grade1').value);
+            const credits1 = parseInt(document.getElementById('credits1').value);
+            const grade2 = parseFloat(document.getElementById('grade2').value);
+            const credits2 = parseInt(document.getElementById('credits2').value);
+
+            // Calculate semester GPA
+            const semesterGPA = calculateSemesterGPA(grade1, credits1, grade2, credits2);
+
+            // Calculate final mark
+            const finalMark = calculateFinalMark(grade1, credits1, grade2, credits2);
+
+            // Display results
+            document.getElementById('semesterGPA').textContent = semesterGPA.toFixed(2);
+            document.getElementById('finalMark').textContent = finalMark.toFixed(2);
+
+            // Show result section
+            document.getElementById('resultSection').style.display = 'block';
+        });
+
+        // Function to calculate semester GPA
+        function calculateSemesterGPA(grade1, credits1, grade2, credits2) {
+            const totalCredits = credits1 + credits2;
+            const weightedSum = (grade1 * credits1) + (grade2 * credits2);
+            const semesterGPA = weightedSum / totalCredits;
+            return semesterGPA;
+        }
+
+        // Function to calculate final mark
+        function calculateFinalMark(grade1, credits1, grade2, credits2) {
+            const totalCredits = credits1 + credits2;
+            const weightedSum = (grade1 * credits1) + (grade2 * credits2);
+            const finalMark = weightedSum / totalCredits;
+            return finalMark;
+        }
+    </script>
+
+</body>
+
+</html>
